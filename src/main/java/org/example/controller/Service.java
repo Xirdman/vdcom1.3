@@ -91,7 +91,13 @@ public class Service {
             Scanner scan2 = new Scanner(fileReader);
             while (scan2.hasNextLine()) {
                 try {
-                    controller.getSingleAnswer(scan2.nextLine());
+                    String string = scan2.nextLine();
+                    String array[] = string.split(" ");
+                    if (array.length > 4) {
+                        double var = controller.getSingleAnswer(string);
+                        String formated = new DecimalFormat("#0.00").format(var);
+                        System.out.print(array[0]+" "+ array[1]+ " = "+ formated+ " "+ array[4]+"\n\n");
+                    }
                 } catch (MyException e) {
                     System.out.print(e.getMessage() + "\n");
                 }
