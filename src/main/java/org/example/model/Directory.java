@@ -43,5 +43,14 @@ public class Directory {
         }
         return 0;
     }
+    public int getLenght(){
+        return list.size();
+    }
+    public List<Unit> getUnitsList(){
+        return list;
+    }
+    public void addUnit(Unit unit){
+        list.add(unit);
+    }
 
 }
