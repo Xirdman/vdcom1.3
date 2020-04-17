@@ -1,5 +1,8 @@
 package org.example.model;
 
+import org.example.controller.MyException;
+
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -12,7 +15,8 @@ public class BiggerDirectory {
         directories = new HashSet<Directory>();
     }
 
-    public void addUnits(String biggerUnitName, String smallerUnitName, double value) {
+    //Добавление нового отношения в базу знаний
+    public void addUnits(String biggerUnitName, String smallerUnitName, BigDecimal value) throws MyException {
         Directory directoryOfBig = null;
         Directory directoryOfSmall = null;
         Iterator<Directory> iterator = directories.iterator();
@@ -41,25 +45,55 @@ public class BiggerDirectory {
         if ((directoryOfBig != null) && (directoryOfSmall != null)) {
             if (directoryOfBig != directoryOfSmall) {
                 mergeDirectories(directoryOfBig, directoryOfSmall, biggerUnitName, smallerUnitName, value);
-            }
-            else {
-                System.out.print("Отношение для "+ biggerUnitName +" и "+ smallerUnitName+" уже определены,и не будут добавлены");
+            } else {
+                throw new MyException("Отношение "+biggerUnitName+" и "+smallerUnitName+" уже есть в справочнике. оно не будет добавлено\n");
             }
         }
     }
 
-    private void mergeDirectories(Directory directoryWithBiggerUnit, Directory directoryWithSmallerUnit, String biggerUnitName, String smallerUnitName, double value) {
-        double biggerV = directoryWithBiggerUnit.getValueByName(biggerUnitName);
-        double smallerV = directoryWithSmallerUnit.getValueByName(smallerUnitName);
+    //Связать справочники если дано выражение которое может соединить известные отношения
+    private void mergeDirectories(Directory directoryWithBiggerUnit, Directory directoryWithSmallerUnit, String biggerUnitName, String smallerUnitName, BigDecimal value) {
+        BigDecimal biggerV = null;
+        BigDecimal smallerV = null;
+        try {
+            biggerV = directoryWithBiggerUnit.getValueByName(biggerUnitName);
+            smallerV = directoryWithSmallerUnit.getValueByName(smallerUnitName);
+        } catch (MyException e) {
+            e.printStackTrace();
+        }
         List<Unit> deletedList = directoryWithSmallerUnit.getUnitsList();
         Iterator<Unit> iterator = deletedList.iterator();
         while (iterator.hasNext()) {
             Unit unit = iterator.next();
-            double variable = unit.getValue();
-            unit.setValue((variable * biggerV) / (value * smallerV));
+            BigDecimal variable = unit.getValue();
+            //unit.setValue((variable * biggerV) / (value * smallerV));
+            unit.setValue(variable.multiply(biggerV).divide(value).divide(smallerV));
             directoryWithBiggerUnit.addUnit(unit);
         }
         directories.remove(directoryWithSmallerUnit);
+    }
+
+    //Найти ответ
+    public BigDecimal getRatio(String knownUnit, String unkownUnit, BigDecimal value) throws MyException {
+        Directory directoryWithBothUnits = null;
+        Iterator<Directory> iterator = directories.iterator();
+        while (iterator.hasNext()) {
+            Directory dir = iterator.next();
+            if(dir.hasInDirectory(knownUnit)&&dir.hasInDirectory(unkownUnit)){
+                directoryWithBothUnits = dir;
+            }
+        }
+        if(directoryWithBothUnits!=null){
+            //отношение двух единиц из справочника умноженное на значение в введенной строки
+            BigDecimal valKnown = directoryWithBothUnits.getValueByName(knownUnit);
+            BigDecimal valUnknown = directoryWithBothUnits.getValueByName(unkownUnit);
+                //return (valKnown*value)/(valUnknown);
+            return valKnown.multiply(value).divide(valUnknown);
+
+        }
+        else {
+            throw new MyException("Концертация невозможна\n");
+        }
     }
 }
 

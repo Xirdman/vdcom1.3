@@ -1,9 +1,12 @@
 package org.example;
 
-public class App 
+import org.example.controller.Service;
+
+public class App
 {
     public static void main( String[] args )
     {
-        //System.exit(0);
+        Service myService = new Service();
+        myService.run();
     }
 }

@@ -2,38 +2,62 @@ package org.example.controller;
 
 import org.example.model.BiggerDirectory;
 
+import java.math.BigDecimal;
+
 public class Controller {
-    private static  BiggerDirectory directory = new BiggerDirectory();
-    public static void addManyStrings(String richText){
+    private static BiggerDirectory biggerDirectory = new BiggerDirectory();
+
+    public void addManyStrings(String richText) throws MyException {
         String array[] = richText.split("\n");
-        for (String i:array) {
-            addSingleString(i);
+        for (String i : array) {
+            try {
+                addSingleString(i);
+            } catch (MyException e) {
+                throw e;
+            }
         }
 
     }
-    public static String getManyAnswers(String richText){
+
+    public String getManyAnswers(String richText) throws MyException {
         String result = "";
         String array[] = richText.split("\n");
-        for (String i:array
-             ) {
-            result+=getSingleAnswer(i);
+        for (String i : array
+        ) {
+            try {
+                result += getSingleAnswer(i);
+            } catch (MyException e) {
+                throw e;
+            }
         }
         return result;
     }
-    public static void addSingleString(String singleString){
+
+    public void addSingleString(String singleString) throws MyException {
         String parsedSingleString[] = singleString.split(" ");
-        double stringDouble1 =Double.parseDouble( parsedSingleString[0]);
+        BigDecimal stringDouble1 = BigDecimal.valueOf(Double.parseDouble(parsedSingleString[0]));
         String name1 = parsedSingleString[1];
-        double stringDouble2 =Double.parseDouble( parsedSingleString[3]);
+        BigDecimal stringDouble2 = BigDecimal.valueOf(Double.parseDouble(parsedSingleString[3]));
         String name2 = parsedSingleString[4];
-        if(stringDouble1<stringDouble2){
-            directory.addUnits(name1,name2,stringDouble2/stringDouble1);
+        if (stringDouble1.equals(new BigDecimal(0)) || stringDouble2.equals(new BigDecimal(0)) ) {
+            throw new MyException("Коэффициент перед числом не может быть равен нулю");
         }
-        else{
-            directory.addUnits(name2,name1,stringDouble1/stringDouble2);
+        if (stringDouble1.compareTo(stringDouble2)== -1) {
+            //biggerDirectory.addUnits(name1, name2, stringDouble2 / stringDouble1);
+            biggerDirectory.addUnits(name1,name2, stringDouble2.divide(stringDouble1));
+        } else {
+            biggerDirectory.addUnits(name2, name1, stringDouble1.divide(stringDouble2));
         }
     }
-    public static String getSingleAnswer(String singleString){
-        return "";
+
+    public BigDecimal getSingleAnswer(String singleString) throws MyException {
+        String parsedString[] = singleString.split(" ");
+        BigDecimal variable = BigDecimal.valueOf(Double.parseDouble(parsedString[0]));
+        if (variable.equals(new BigDecimal(0))) {
+            throw new MyException("Коэффициент перед числом не может быть равен нулю");
+        }
+        String knownUnitName = parsedString[1];
+        String unknownUnitName = parsedString[4];
+        return biggerDirectory.getRatio(knownUnitName, unknownUnitName, variable);
     }
 }
