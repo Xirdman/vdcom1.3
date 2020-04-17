@@ -16,19 +16,19 @@ public class AppTest {
     @Test
     public void addingUnits() {
         BiggerDirectory directory = new BiggerDirectory();
-        Unit testUnit1 = new Unit("santimeter", new BigDecimal(1));
-        Unit testUnit2 = new Unit("decimeter", new BigDecimal(10));
-        Unit testUnit3 = new Unit("meter", new BigDecimal(100));
+        Unit testUnit1 = new Unit("santimeter", 1);
+        Unit testUnit2 = new Unit("decimeter", 10);
+        Unit testUnit3 = new Unit("meter", 100);
         try {
             directory.addUnits(testUnit2.getName(),
                     testUnit1.getName(),
-                    testUnit2.getValue().divide( testUnit1.getValue()));
+                    testUnit2.getValue()/ testUnit1.getValue());
             directory.addUnits(testUnit3.getName(),
                     testUnit2.getName(),
-                    testUnit3.getValue().divide(testUnit2.getValue()));
+                    testUnit3.getValue()/testUnit2.getValue());
             directory.addUnits("meter",
                     "halfmeter",
-                    new BigDecimal(2));
+                    2);
         } catch (MyException e) {
             System.out.print(e.getMessage());
         }
@@ -37,23 +37,23 @@ public class AppTest {
     @Test
     public void testingMerge() {
         BiggerDirectory testDir = new BiggerDirectory();
-        Unit testUnit1 = new Unit("milimeter",new BigDecimal(1));
-        Unit testUnit2 = new Unit("santimeter", new BigDecimal(10));
-        Unit testUnit3 = new Unit("decimeter", new BigDecimal(100));
-        Unit testUnit4 = new Unit("kilometer", new BigDecimal(1000000));
+        Unit testUnit1 = new Unit("milimeter",1);
+        Unit testUnit2 = new Unit("santimeter", 10);
+        Unit testUnit3 = new Unit("decimeter", 100);
+        Unit testUnit4 = new Unit("kilometer", 1000000);
         try {
             testDir.addUnits(testUnit2.getName(),
                     testUnit1.getName(),
-                    testUnit2.getValue().divide(testUnit1.getValue()));
+                    testUnit2.getValue()/testUnit1.getValue());
             testDir.addUnits(testUnit3.getName(),
                     testUnit2.getName(),
-                    testUnit3.getValue().divide(testUnit2.getValue()));
+                    testUnit3.getValue()/testUnit2.getValue());
             testDir.addUnits(testUnit4.getName(),
                     testUnit3.getName(),
-                    testUnit4.getValue().divide(testUnit3.getValue()));
+                    testUnit4.getValue()/testUnit3.getValue());
 
-            testDir.addUnits("meter", "proxydecimeter", new BigDecimal(10));
-            testDir.addUnits("kilometer", "meter", new BigDecimal(1000));
+            testDir.addUnits("meter", "proxydecimeter", 10);
+            testDir.addUnits("kilometer", "meter", 10);
         } catch (MyException e) {
             System.out.print(e.getMessage());
         }
@@ -79,43 +79,43 @@ public class AppTest {
     @Test
     public void testRightAnswerWithBytes() {
         BiggerDirectory bg = new BiggerDirectory();
-        BigDecimal testAnswer =new BigDecimal(0);
+        double testAnswer =0;
         try {
-            bg.addUnits("byte", "bit", new BigDecimal(8));
-            testAnswer = bg.getRatio("bit", "byte", new BigDecimal(16));
+            bg.addUnits("byte", "bit", 8);
+            testAnswer = bg.getRatio("bit", "byte", 16);
         } catch (MyException e) {
             System.out.print(e.getMessage());
         }
-        BigDecimal rightAnswer = new BigDecimal(2);
-        Assert.assertEquals(rightAnswer, testAnswer);
+        double rightAnswer = 2;
+        Assert.assertEquals(rightAnswer, testAnswer,0.01);
     }
 
     @Test
     public void testRightAnswerWithRings() {
         BiggerDirectory bg = new BiggerDirectory();
-        BigDecimal testAnswer =new BigDecimal(0);
+        double testAnswer =0;
         try {
-            bg.addUnits("bar", "ring", new BigDecimal(6));
-            testAnswer = bg.getRatio("bar", "ring", new BigDecimal(6));
+            bg.addUnits("bar", "ring", 6);
+            testAnswer = bg.getRatio("bar", "ring", 6);
         } catch (MyException e) {
             System.out.print(e.getMessage());
         }
-        BigDecimal rightAnswer = new BigDecimal(36);
-        Assert.assertEquals(rightAnswer, testAnswer);
+        double rightAnswer = 36;
+        Assert.assertEquals(rightAnswer, testAnswer, 0.01);
     }
     @Test
     public void testRightAnswerWithKylobytes() {
         BiggerDirectory bg = new BiggerDirectory();
-        BigDecimal testAnswer =new BigDecimal(0);
+        double testAnswer =0;
         try {
             //В одном байте 1024 килобайта
-            bg.addUnits("kilobyte", "byte", new BigDecimal(1024));
+            bg.addUnits("kilobyte", "byte", 1024);
             //сколько килобайтов в 512 байтах
-            testAnswer = bg.getRatio("byte", "kilobyte", new BigDecimal(512));
+            testAnswer = bg.getRatio("byte", "kilobyte", 512);
         } catch (MyException e) {
             System.out.print(e.getMessage());
         }
-        BigDecimal rightAnswer = new BigDecimal(0.5);
-        Assert.assertEquals(rightAnswer, testAnswer);
+        double rightAnswer = 0.5;
+        Assert.assertEquals(rightAnswer, testAnswer,0.01);
     }
 }

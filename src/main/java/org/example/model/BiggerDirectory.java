@@ -2,7 +2,6 @@ package org.example.model;
 
 import org.example.controller.MyException;
 
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -16,7 +15,7 @@ public class BiggerDirectory {
     }
 
     //Добавление нового отношения в базу знаний
-    public void addUnits(String biggerUnitName, String smallerUnitName, BigDecimal value) throws MyException {
+    public void addUnits(String biggerUnitName, String smallerUnitName, double value) throws MyException {
         Directory directoryOfBig = null;
         Directory directoryOfSmall = null;
         Iterator<Directory> iterator = directories.iterator();
@@ -46,52 +45,49 @@ public class BiggerDirectory {
             if (directoryOfBig != directoryOfSmall) {
                 mergeDirectories(directoryOfBig, directoryOfSmall, biggerUnitName, smallerUnitName, value);
             } else {
-                throw new MyException("Отношение "+biggerUnitName+" и "+smallerUnitName+" уже есть в справочнике. оно не будет добавлено\n");
+                throw new MyException("Отношение " + biggerUnitName + " и " + smallerUnitName + " уже есть в справочнике. оно не будет добавлено\n");
             }
         }
     }
 
     //Связать справочники если дано выражение которое может соединить известные отношения
-    private void mergeDirectories(Directory directoryWithBiggerUnit, Directory directoryWithSmallerUnit, String biggerUnitName, String smallerUnitName, BigDecimal value) {
-        BigDecimal biggerV = null;
-        BigDecimal smallerV = null;
+    private void mergeDirectories(Directory directoryWithBiggerUnit, Directory directoryWithSmallerUnit, String biggerUnitName, String smallerUnitName, double value) throws MyException {
+        double biggerV = 0;
+        double smallerV = 0;
         try {
             biggerV = directoryWithBiggerUnit.getValueByName(biggerUnitName);
             smallerV = directoryWithSmallerUnit.getValueByName(smallerUnitName);
         } catch (MyException e) {
-            e.printStackTrace();
+            throw e;
         }
         List<Unit> deletedList = directoryWithSmallerUnit.getUnitsList();
         Iterator<Unit> iterator = deletedList.iterator();
         while (iterator.hasNext()) {
             Unit unit = iterator.next();
-            BigDecimal variable = unit.getValue();
-            //unit.setValue((variable * biggerV) / (value * smallerV));
-            unit.setValue(variable.multiply(biggerV).divide(value).divide(smallerV));
+            double variable = unit.getValue();
+            unit.setValue((variable * biggerV) / (value * smallerV));
             directoryWithBiggerUnit.addUnit(unit);
         }
         directories.remove(directoryWithSmallerUnit);
     }
 
     //Найти ответ
-    public BigDecimal getRatio(String knownUnit, String unkownUnit, BigDecimal value) throws MyException {
+    public double getRatio(String knownUnit, String unkownUnit, double value) throws MyException {
         Directory directoryWithBothUnits = null;
         Iterator<Directory> iterator = directories.iterator();
         while (iterator.hasNext()) {
             Directory dir = iterator.next();
-            if(dir.hasInDirectory(knownUnit)&&dir.hasInDirectory(unkownUnit)){
+            if (dir.hasInDirectory(knownUnit) && dir.hasInDirectory(unkownUnit)) {
                 directoryWithBothUnits = dir;
             }
         }
-        if(directoryWithBothUnits!=null){
+        if (directoryWithBothUnits != null) {
             //отношение двух единиц из справочника умноженное на значение в введенной строки
-            BigDecimal valKnown = directoryWithBothUnits.getValueByName(knownUnit);
-            BigDecimal valUnknown = directoryWithBothUnits.getValueByName(unkownUnit);
-                //return (valKnown*value)/(valUnknown);
-            return valKnown.multiply(value).divide(valUnknown);
+            double valKnown = directoryWithBothUnits.getValueByName(knownUnit);
+            double valUnknown = directoryWithBothUnits.getValueByName(unkownUnit);
+            return (valKnown * value) / (valUnknown);
 
-        }
-        else {
+        } else {
             throw new MyException("Концертация невозможна\n");
         }
     }

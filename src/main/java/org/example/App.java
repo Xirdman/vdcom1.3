@@ -2,11 +2,14 @@ package org.example;
 
 import org.example.controller.Service;
 
-public class App
-{
-    public static void main( String[] args )
-    {
+public class App {
+    public static void main(String[] args) {
         Service myService = new Service();
-        myService.run();
+        try {
+            myService.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+            myService.run();
+        }
     }
 }

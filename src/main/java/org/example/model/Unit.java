@@ -4,20 +4,22 @@ import java.math.BigDecimal;
 
 public class Unit {
     private String name;
-    private BigDecimal value;
-    public String getName(){
+    private double value;
+
+    public String getName() {
         return this.name;
     }
 
-    public Unit(String name, BigDecimal value) {
+    public Unit(String name, double value) {
         this.name = name;
         this.value = value;
     }
 
-    public BigDecimal getValue() {
+    public double getValue() {
         return value;
     }
-    public void setValue(BigDecimal value){
+
+    public void setValue(double value) {
         this.value = value;
     }
 }
