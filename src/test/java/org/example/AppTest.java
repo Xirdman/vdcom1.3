@@ -2,14 +2,12 @@ package org.example;
 
 import static org.junit.Assert.assertTrue;
 
-import org.example.controller.Controller;
+import org.example.controller.Service;
 import org.example.controller.MyException;
 import org.example.model.BiggerDirectory;
 import org.example.model.Unit;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.math.BigDecimal;
 
 
 public class AppTest {
@@ -61,7 +59,7 @@ public class AppTest {
 
     @Test
     public void addFromText() {
-        Controller con = new Controller();
+        Service con = new Service();
         try {
             con.addManyStrings("1024 byte = 1 kilobyte \n" +
                     "2 bar = 12 ring \n" +
